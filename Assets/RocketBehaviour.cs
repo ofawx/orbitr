@@ -7,21 +7,20 @@ public class RocketBehaviour : MonoBehaviour {
 	public GameObject moon;
 	Rigidbody moonRB;
 	Rigidbody selfRB;
-	Transform rocketBase;
+	Transform nozzle;
+	GameObject plume;
 
 	// Use this for initialization
 	void Start () {
 		moon = GameObject.Find("Moon");
 		moonRB = moon.GetComponent<Rigidbody>();
 		selfRB = GetComponent<Rigidbody>();
-		rocketBase = transform.Find("Base");
+		nozzle = transform.Find("Nozzle");
+		plume = GameObject.Find("Plume");
 	}
 
 	// Update is called once per frame
 	void Update () {
-		if (moonRB == null || selfRB == null) {
-			//Start();
-		}
 	}
 
 	// Physics Update
@@ -52,14 +51,18 @@ public class RocketBehaviour : MonoBehaviour {
 		}
 
 		Vector3 thrustDirection = (getRocketOrientation() + 0.2f * gimbal).normalized;
+		nozzle.rotation = Quaternion.LookRotation(-thrustDirection);
 
 		if (Input.GetKey(KeyCode.Space)) {
-			selfRB.AddForceAtPosition(10000 * thrustDirection, rocketBase.position);
+			selfRB.AddForceAtPosition(10000 * thrustDirection, nozzle.position);
+			plume.GetComponent<Renderer>().enabled = true;
+		} else {
+			plume.GetComponent<Renderer>().enabled = false;
 		}
 	}
 
 	public Vector3 getRocketOrientation () {
-		Vector3 orientation = (selfRB.position - rocketBase.position);
+		Vector3 orientation = (selfRB.position - nozzle.position);
 		return orientation.normalized;
 	}
 }
